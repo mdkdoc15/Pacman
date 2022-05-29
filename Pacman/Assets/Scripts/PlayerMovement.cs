@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         mOrigPos = transform.position;
         mTargetPos = mOrigPos + dir;
 
-        while (elapsedTime < mTimeToMove)
+        while (elapsedTime < mTimeToMove && mIsMoving)
         {
             transform.position = Vector3.Lerp(mOrigPos, mTargetPos, elapsedTime / mTimeToMove);
             elapsedTime += Time.deltaTime;
@@ -71,5 +71,15 @@ public class PlayerMovement : MonoBehaviour
         transform.position = mTargetPos;
 
         mIsMoving = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("Wall"))
+        {
+            StopAllCoroutines();
+            mIsMoving = false;
+            transform.position = mOrigPos;
+        }
     }
 }
