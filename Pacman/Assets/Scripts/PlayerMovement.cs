@@ -19,6 +19,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float mTimeToMove = 0.05f;
     private CircleCollider2D mCollider;
 
+    private GameObject mCurrentTeleport = null;
+    
+    
+
     private void Awake()
     {
         mCollider = GetComponent<CircleCollider2D>();
@@ -107,5 +111,25 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D raycastHit = Physics2D.Raycast(mCollider.bounds.center, dir, 2 * mCollider.bounds.extents.x , mHitLayer);
         return raycastHit.collider == null;
+    }
+
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.CompareTag("Teleport") && mCurrentTeleport == null)
+        {
+            mCurrentTeleport = col.gameObject;
+            StopAllCoroutines();
+            mIsMoving = false;
+            transform.position = col.gameObject.GetComponent<Teleport>().GetDestination();
+
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject != mCurrentTeleport && other.gameObject.CompareTag("Teleport"))
+        {
+            mCurrentTeleport = null;
+        }
     }
 }
